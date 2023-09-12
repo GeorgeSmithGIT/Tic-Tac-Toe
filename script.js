@@ -4,7 +4,7 @@ const allBoxes = document.querySelectorAll(".item");
 const container = document.querySelector(".container");
 const resetButton = document.querySelector(".reset");
 const winnerDiv = document.querySelector(".winner");
-let activePlayer = 0;
+let players = ["X", "O"];
 let playerX = [];
 let playerO = [];
 let winningCombinations = [
@@ -20,6 +20,7 @@ let winningCombinations = [
 let hasAllElems;
 let gameActive = 0;
 
+// Function to check if a player has won
 const CheckWin = function (curPlayer) {
   winningCombinations.forEach(function (curCombo, i, arr) {
     if (hasAllElems === true) return;
@@ -29,30 +30,24 @@ const CheckWin = function (curPlayer) {
   });
 };
 
+// Main Event Handler for click inside game area
 container.addEventListener("click", function (cur, i, arr) {
   if (!cur.target.classList.contains("item")) return;
   if (gameActive === 0) return;
   if (cur.target.textContent === "O" || cur.target.textContent === "X") return;
-  if (activePlayer === 0) {
-    cur.target.textContent = "X";
+  cur.target.textContent = players[0];
+  if (players[0] === "X") {
     playerX.push(cur.target.classList[1]);
     CheckWin(playerX);
-    activePlayer = 1;
-    if (hasAllElems === true) {
-      gameActive = 0;
-      displayWinner("X");
-      return;
-    }
-  } else if (activePlayer === 1) {
-    cur.target.textContent = "O";
+  } else if (players[0] === "O") {
     playerO.push(cur.target.classList[1]);
     CheckWin(playerO);
-    activePlayer = 0;
-    if (hasAllElems === true) {
-      gameActive = 0;
-      displayWinner("O");
-      return;
-    }
+  }
+  players.reverse();
+  if (hasAllElems === true || playerX.length === 5 || playerO.length === 5) {
+    gameActive = 0;
+    displayWinnerDraw(`${players[1]}`);
+    return;
   }
 });
 
@@ -61,10 +56,10 @@ resetButton.addEventListener("click", function () {
   resetGame();
 });
 
-// Function to display winner
-const displayWinner = function (player) {
+// Function to display winner or draw
+const displayWinnerDraw = function (player) {
   winnerDiv.classList.remove("hidden");
-  winnerDiv.textContent = `Player ${player} wins!`;
+  hasAllElems === false ? (winnerDiv.textContent = "The game is a draw") : (winnerDiv.textContent = `Player ${player} wins!`);
 };
 
 // Function to reset game
